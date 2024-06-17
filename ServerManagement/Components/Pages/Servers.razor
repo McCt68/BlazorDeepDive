@@ -1,0 +1,74 @@
+﻿@* This is a routeble componet because it s a page ?? *@
+@page "/servers"
+
+@inject NavigationManager NavigationManager
+
+<h3>Servers</h3>
+<br />
+<br />
+
+@* classes are something I can use to refer to the same type of element I think *@
+@* the classes used are from bootstrap *@
+@* boostrap is a framework of html and css that can be used. they will look good on any device or screensize*@
+<div class="container-fluid text-center">
+    <div class="row w-50">
+        @foreach (var city in cities)
+        {
+            <div class="col">
+                <div class="card">
+                    <img src="@($"/images/{city}.png")" class="card-img-top" alt="...">
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary">@city</button>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+
+<br />
+
+@* span is an inline container used for styling html. *@
+<ul>
+    @foreach (var server in servers)
+    {
+        <li>
+            @server.Name in @server.City is
+            <span style="color:@((server.IsOnline?"green" :"red"))">
+                @(server.IsOnline ? "online" : "offline")
+            </span>
+            &nbsp;
+            <a href="/servers/@server.ServerId" class="btn btn-link">Edit</a>
+            &nbsp;
+            <EditForm 
+                Model="server" 
+                FormName="@($"form-server-{server.ServerId}")" 
+                OnValidSubmit="@(()=> {DeleteServer(server.ServerId);})">
+                <button type="submit" class="btn btn-primary">Delete Server</button>
+
+            </EditForm>
+        </li>
+    }
+
+</ul>
+<p>
+    <a href="/servers/add" class="btn btn-primary">Add Server</a>
+</p>
+
+
+@code {
+    // State variables.
+    private List<Server> servers = ServersRepository.GetServersByCity("Toronto");
+
+    private List<String> cities = CitiesRepository.GetCities();
+
+    private void DeleteServer(int serverId)
+    {
+        if(serverId > 0)
+        {
+            ServersRepository.DeleteServer(serverId);
+            NavigationManager.Refresh(); // there was a bug here with earlier blazor, but it seems fixed now
+        }        
+    }
+}

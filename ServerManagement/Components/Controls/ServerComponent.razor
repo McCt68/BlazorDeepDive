@@ -1,0 +1,19 @@
+﻿@* This is a none routleable components because it doent have a @page.
+I call these controls because the reside inside the pages *@
+
+@* I can use this component inside another component *@
+@* Implicit Razor syntax @varname will show the value of the var *@
+@* Explicit Razor syntax also starts with a @ but it has a parantheses () So i can add more logic *@
+
+@* div is a block level container used for styling *@
+<div data-name="@server.Name"
+     data-onlinestatus="Server is @(server.IsOnline?"online":"offline")"
+     style="color:@(server.IsOnline?"green":"red")">
+    @server.Name is in @server.City that is @(server.IsOnline?"online":"offline")
+</div>
+
+@code {    
+
+    private Server server = new Server { Name = "server 1", City = "Toronto" };
+
+}

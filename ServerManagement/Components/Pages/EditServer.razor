@@ -1,0 +1,89 @@
+﻿@page "/servers/{id:int}"
+
+@inject NavigationManager NavigationManager
+
+<h3>Edit Server</h3>
+<br />
+<br />
+@* EditForm is a MS component I can use rather than a html form, the ms has more ways to configure the form. *@
+@* When a form is submitted, it is kinda packed and send to the server as a http request *@
+@* The onSubmit event handler is triggered when the user press the submit button*@
+@if (server != null)
+{
+    <EditForm Model="server" FormName="formServer" OnValidSubmit="SubmitServerForm">
+        <DataAnnotationsValidator></DataAnnotationsValidator>
+        <ValidationSummary></ValidationSummary>
+
+        <InputNumber @bind-Value="server.ServerId" hidden></InputNumber>
+
+        @* 1 row and 2 columns *@
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="col-form-label">Name</label>
+            </div>
+            <div class="col-6">
+                <InputText @bind-Value="server.Name" class="form-control"></InputText>
+            </div>
+            <div class="col-6">
+                <ValidationMessage For="() => server.Name"></ValidationMessage>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="col-form-label">City</label>
+            </div>
+            <div class="col-6">
+                <InputText @bind-Value="server.City" class="form-control"></InputText>
+            </div>
+            <div class="col-6">
+                <ValidationMessage For="() => server.City"></ValidationMessage>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-2">
+                <label class="col-form-label">Online</label>
+            </div>
+            <div class="col-6">
+                <InputCheckbox @bind-Value="server.IsOnline" class="form-check-input"></InputCheckbox>
+            </div>
+        </div>
+        <br />
+        <button class="btn btn-primary" type="submit">Update</button>
+        &nbsp;
+        <a href="/servers" class="btn btn-primary">Close</a>
+    </EditForm>
+}
+
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    // Property Used to map the values from the Form to the current server ??
+    // Similar to a 2 way databinding
+    [SupplyParameterFromForm(FormName = "formServer")]
+    private Server? server { get; set; }
+
+    // This is triggered when the component recieves the parameter value from the Url ??
+    protected override void OnParametersSet()
+    {
+        // Here I use the parameter value that i recieved to set the current server to the one with that id -
+        // only if the server is null ??=
+        server ??= ServersRepository.GetServerById(this.Id);
+
+    }
+
+    // Event that fires when the submitform is triggered
+    private void SubmitServerForm()
+    {
+        if (server.ServerId != null)
+        {
+            ServersRepository.UpdateServer(server.ServerId, server);            
+        }
+        
+        NavigationManager.NavigateTo("/servers");
+    }
+}
