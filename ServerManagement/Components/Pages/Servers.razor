@@ -17,7 +17,7 @@
         @foreach (var city in cities)
         {
             <div class="col">
-                <div class="card @(selectedCity.Equals(city, StringComparison.OrdinalIgnoreCase)?"border-primary":"")" >
+                <div class="card @(selectedCity.Equals(city, StringComparison.OrdinalIgnoreCase)?"border-primary":"")">
                     <img src="@($"/images/{city}.png")" class="card-img-top" alt="...">
                     <div class="card-body">
                         <button type="button" class="btn btn-primary" @onclick="@(() => {SelectCity(city);})">@city</button>
@@ -26,6 +26,15 @@
             </div>
         }
     </div>
+</div>
+<br />
+
+@* Two way databinding to update the state. Using bind-value *@
+<div class="input-group mb-3">
+    <input type="text" class="form-control" placeholder="Search Servers"
+    @bind-value=serverFilter
+    @bind-value:event="oninput"/>
+    <button class="btn btn-outline-secondary" type="button" id="button-search" @onclick="HandleSearch">Search</button>
 </div>
 
 
@@ -69,7 +78,23 @@
 
     private List<String> cities = CitiesRepository.GetCities();
 
-    private string selectedCity = "Toronto";    
+    private string selectedCity = "Toronto";
+
+    private string _serverFilter = "";
+
+    // Two way databinding when the user change this from the UI the state will change -
+    // or when the state is changed from the code behind file the value reflected in the UI will also change
+    // this is done by using the bind-value atribute in the html file -
+    // as that will trigger the onChange event behind the schenes.
+    private string serverFilter
+    {
+        get => _serverFilter; set
+        {
+            _serverFilter = value;
+            // Do something
+            this.servers = ServersRepository.SearchServers(_serverFilter);
+        }
+    }
 
     private void DeleteServer(int serverId)
     {
@@ -83,6 +108,13 @@
     private void SelectCity(string cityName)
     {
         this.selectedCity = cityName;
-        this.servers = ServersRepository.GetServersByCity(this.selectedCity);        
+        this.servers = ServersRepository.GetServersByCity(this.selectedCity);
+    }
+
+    private void HandleSearch(MouseEventArgs e)
+    {
+        this.servers = ServersRepository.SearchServers(serverFilter);
+
+        this.selectedCity = string.Empty;
     }
 }
