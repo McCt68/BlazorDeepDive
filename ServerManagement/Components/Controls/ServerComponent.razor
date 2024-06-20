@@ -3,17 +3,32 @@ I call these controls because the reside inside the pages *@
 
 @* I can use this component inside another component *@
 @* Implicit Razor syntax @varname will show the value of the var *@
-@* Explicit Razor syntax also starts with a @ but it has a parantheses () So i can add more logic *@
+@* Explicit Razor syntax also starts with a @ but it has a parantheses () So I can add more logic *@
 
-@* div is a block level container used for styling *@
-<div data-name="@server.Name"
-     data-onlinestatus="Server is @(server.IsOnline?"online":"offline")"
-     style="color:@(server.IsOnline?"green":"red")">
-    @server.Name is in @server.City that is @(server.IsOnline?"online":"offline")
-</div>
+@if (server != null)
+{   
+        @* div is a block level container used for styling *@
+        <div data-name="@server.Name"
+             data-onlinestatus="Server is @(server.IsOnline?"online":"offline")"
+             style="color:@(server.IsOnline?"green":"red")">
+            @server.Name is in @server.City that is @(server.IsOnline ? "online" : "offline")
+            &nbsp;
+            <button type="button" class="btn btn-primary" @onclick="ChangeStatus">Turn On/Off</button>
+        </div>    
+}
 
-@code {    
+@code {
 
-    private Server server = new Server { Name = "server 1", City = "Toronto" };
+    // State Variable
+    private Server? server { get; set; } = new Server { Name = "server 1", City = "Toronto" };
 
+    // Event handling
+    // Used to change the State variable
+    private void ChangeStatus(MouseEventArgs e)
+    {
+        if(server != null)
+        {
+            this.server.IsOnline = !this.server.IsOnline; // switch server status when button is pressed
+        }        
+    }
 }

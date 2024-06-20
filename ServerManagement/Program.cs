@@ -3,7 +3,7 @@ using ServerManagement.Components;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the DI container. Its a Collection of services
-builder.Services.AddRazorComponents();
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 var app = builder.Build();
 
@@ -28,6 +28,6 @@ app.UseAntiforgery();
 // This midleware will map the http request to the App class. So all request will be mapped to the App class -
 // which is the root component.
 // When we say that blazor is a single page application framework. The single page is this root component
-app.MapRazorComponents<App>();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 app.Run(); // Runs in a loop listening for incoming http requests

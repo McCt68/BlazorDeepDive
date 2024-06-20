@@ -1,6 +1,8 @@
 ﻿@* This is a routeble componet because it s a page ?? *@
 @page "/servers"
 
+@rendermode InteractiveServer
+
 @inject NavigationManager NavigationManager
 
 <h3>Servers</h3>
@@ -15,19 +17,24 @@
         @foreach (var city in cities)
         {
             <div class="col">
-                <div class="card">
+                <div class="card @(selectedCity.Equals(city, StringComparison.OrdinalIgnoreCase)?"border-primary":"")" >
                     <img src="@($"/images/{city}.png")" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <button type="button" class="btn btn-primary">@city</button>
+                        <button type="button" class="btn btn-primary" @onclick="@(() => {SelectCity(city);})">@city</button>
                     </div>
                 </div>
-
             </div>
         }
     </div>
 </div>
 
+
 <br />
+
+@* Using the ServerComponent *@
+@* Specifying rendermode here, and also in program in DI container, and middleware *@.
+@* <ServerComponent @rendermode="InteractiveServer"></ServerComponent> *@
+
 
 @* span is an inline container used for styling html. *@
 <ul>
@@ -41,10 +48,9 @@
             &nbsp;
             <a href="/servers/@server.ServerId" class="btn btn-link">Edit</a>
             &nbsp;
-            <EditForm 
-                Model="server" 
-                FormName="@($"form-server-{server.ServerId}")" 
-                OnValidSubmit="@(()=> {DeleteServer(server.ServerId);})">
+            <EditForm Model="server"
+                      FormName="@($"form-server-{server.ServerId}")"
+                      OnValidSubmit="@(()=> {DeleteServer(server.ServerId);})">
                 <button type="submit" class="btn btn-primary">Delete Server</button>
 
             </EditForm>
@@ -63,12 +69,20 @@
 
     private List<String> cities = CitiesRepository.GetCities();
 
+    private string selectedCity = "Toronto";    
+
     private void DeleteServer(int serverId)
     {
-        if(serverId > 0)
+        if (serverId > 0)
         {
             ServersRepository.DeleteServer(serverId);
             NavigationManager.Refresh(); // there was a bug here with earlier blazor, but it seems fixed now
-        }        
+        }
+    }
+
+    private void SelectCity(string cityName)
+    {
+        this.selectedCity = cityName;
+        this.servers = ServersRepository.GetServersByCity(this.selectedCity);        
     }
 }
