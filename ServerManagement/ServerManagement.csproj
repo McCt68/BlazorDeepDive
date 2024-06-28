@@ -6,6 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Components\Controls\ServerListComponent.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Components\Controls\ServerListComponent.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Components\Controls\ServerListComponent.razor" />
+  </ItemGroup>
+
   <!--Trying to remove these as they are not in the git from author-->
   <!--<ItemGroup>
     <Content Remove="Components\Pages\AddServer.razor" />

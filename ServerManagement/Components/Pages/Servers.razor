@@ -1,4 +1,4 @@
-﻿@* This is a routeble componet because it s a page ?? *@
+﻿@* This is a routeble componet because it s a page *@
 @page "/servers"
 
 @rendermode InteractiveServer
@@ -29,52 +29,30 @@
 </div>
 <br />
 
+
+
 @* Two way databinding to update the state. Using bind-value *@
 <div class="input-group mb-3">
     <input type="text" class="form-control" placeholder="Search Servers"
-    @bind-value=serverFilter
-    @bind-value:event="oninput"/>
+           @bind-value=serverFilter
+           @bind-value:event="oninput" />
     <button class="btn btn-outline-secondary" type="button" id="button-search" @onclick="HandleSearch">Search</button>
 </div>
-
 
 <br />
 
 @* Using the ServerComponent *@
 @* Specifying rendermode here, and also in program in DI container, and middleware *@.
 @* <ServerComponent @rendermode="InteractiveServer"></ServerComponent> *@
+<ServerListComponent @rendermode="InteractiveServer"></ServerListComponent>
 
-
-@* span is an inline container used for styling html. *@
-<ul>
-    @foreach (var server in servers)
-    {
-        <li>
-            @server.Name in @server.City is
-            <span style="color:@((server.IsOnline?"green" :"red"))">
-                @(server.IsOnline ? "online" : "offline")
-            </span>
-            &nbsp;
-            <a href="/servers/@server.ServerId" class="btn btn-link">Edit</a>
-            &nbsp;
-            <EditForm Model="server"
-                      FormName="@($"form-server-{server.ServerId}")"
-                      OnValidSubmit="@(()=> {DeleteServer(server.ServerId);})">
-                <button type="submit" class="btn btn-primary">Delete Server</button>
-
-            </EditForm>
-        </li>
-    }
-
-</ul>
 <p>
     <a href="/servers/add" class="btn btn-primary">Add Server</a>
 </p>
 
 
 @code {
-    // State variables.
-    private List<Server> servers = ServersRepository.GetServersByCity("Toronto");
+    
 
     private List<String> cities = CitiesRepository.GetCities();
 
@@ -92,28 +70,30 @@
         {
             _serverFilter = value;
             // Do something
-            this.servers = ServersRepository.SearchServers(_serverFilter);
+            // this.servers = ServersRepository.SearchServers(_serverFilter);
         }
     }
 
-    private void DeleteServer(int serverId)
-    {
-        if (serverId > 0)
-        {
-            ServersRepository.DeleteServer(serverId);
-            NavigationManager.Refresh(); // there was a bug here with earlier blazor, but it seems fixed now
-        }
-    }
+    
 
     private void SelectCity(string cityName)
     {
         this.selectedCity = cityName;
-        this.servers = ServersRepository.GetServersByCity(this.selectedCity);
+        // this.servers = ServersRepository.GetServersByCity(this.selectedCity);
+
+        // if (cityName == "Halifax")
+        // {
+        //     for (int i = 16; i < 2000; i++) // using the actual servers list count instead of hardcoed integer value
+        //                                     // for (int i = this.servers.Count; i < 2000; i++) // using the actual servers list count instead of hardcoed integer value
+        //     {
+        //         servers.Add(new Server { ServerId = i, Name = $"Server{i}", City = "Halifax" });
+        //     }
+        // }
     }
 
     private void HandleSearch(MouseEventArgs e)
     {
-        this.servers = ServersRepository.SearchServers(serverFilter);
+        // this.servers = ServersRepository.SearchServers(serverFilter);
 
         this.selectedCity = string.Empty;
     }
